@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+uv.lock
 
 # Virtual environments
 .venv
@@ -12,3 +13,6 @@ wheels/
 # Artifacts
 .coverage
 htmlcov/
+
+# Sensitive
+.env
