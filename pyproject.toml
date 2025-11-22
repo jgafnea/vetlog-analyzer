@@ -11,6 +11,7 @@ dependencies = [
     "mysql-connector-python>=9.5.0",
     "pymox>=1.4.1",
     "pytest>=9.0.1",
+    "pytest-mock>=3.15.1",
     "python-dotenv>=1.2.1",
     "ruff>=0.14.5",
 ]
