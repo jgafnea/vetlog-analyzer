@@ -6,37 +6,37 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
-env:
-  HOST: localhost
-  DATABASE: vetlog
-  # Epehemeral credentials for testing
-  DB_ROOT_PASSWORD: root_secret
-  VETLOG_USER: vetlogUser
-  VETLOG_PASSWORD: vetlogDB
-  FACTOR: ${{ secrets.FACTOR || '0.5' }}
+# env:
+# HOST: localhost
+# DATABASE: vetlog
+# # Epehemeral credentials for testing
+# DB_ROOT_PASSWORD: root_secret
+# VETLOG_USER: vetlogUser
+# VETLOG_PASSWORD: vetlogDB
+# FACTOR: ${{ secrets.FACTOR || '0.5' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     # 1. Define MySQL as a service container
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          # Automatically set up the root password
-          MYSQL_ROOT_PASSWORD: root_secret
-          # Automatically create the database and user for the application
-          MYSQL_DATABASE: vetlog
-          MYSQL_USER: vetlogUser
-          MYSQL_PASSWORD: vetlogDB
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+    # services:
+    # mysql:
+    #   image: mysql:8.0
+    #   env:
+    #     # Automatically set up the root password
+    #     MYSQL_ROOT_PASSWORD: root_secret
+    #     # Automatically create the database and user for the application
+    #     MYSQL_DATABASE: vetlog
+    #     MYSQL_USER: vetlogUser
+    #     MYSQL_PASSWORD: vetlogDB
+    #   ports:
+    #     - 3306:3306
+    #   options: >-
+    #     --health-cmd="mysqladmin ping"
+    #     --health-interval=10s
+    #     --health-timeout=5s
+    #     --health-retries=5
 
     steps:
       - name: Check out repository code
@@ -62,24 +62,24 @@ jobs:
         run: |
           uv run ruff check
 
-      # 2. Database Setup: Wait for service and execute SQL
-      - name: Wait for MySQL and initialize database
-        env:
-          # Use ephemeral credentials defined in global env
-          MYSQL_PWD: ${{ env.DB_ROOT_PASSWORD }}
-        run: |
-          # Wait for MySQL service to be available
-          echo "Waiting for MySQL service to start on $HOST:3306..."
-          for i in $(seq 1 10); do
-            nc -z -w 5 $HOST 3306 && break
-            echo "Attempt $i failed. Retrying in 5 seconds..."
-            sleep 5
-          done
-
-      - name: Load schema and data from init.sql into database
-        run: |
-          # Execute the extracted SQL script
-          mysql -h $HOST -uroot -D${DATABASE} < init.sql
+      # # 2. Database Setup: Wait for service and execute SQL
+      # - name: Wait for MySQL and initialize database
+      #   env:
+      #     # Use ephemeral credentials defined in global env
+      #     MYSQL_PWD: ${{ env.DB_ROOT_PASSWORD }}
+      #   run: |
+      #     # Wait for MySQL service to be available
+      #     echo "Waiting for MySQL service to start on $HOST:3306..."
+      #     for i in $(seq 1 10); do
+      #       nc -z -w 5 $HOST 3306 && break
+      #       echo "Attempt $i failed. Retrying in 5 seconds..."
+      #       sleep 5
+      #     done
+      #
+      # - name: Load schema and data from init.sql into database
+      #   run: |
+      #     # Execute the extracted SQL script
+      #     mysql -h $HOST -uroot -D${DATABASE} < init.sql
 
       - name: Execute tests
         run: |
